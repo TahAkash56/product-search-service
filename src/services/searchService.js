@@ -1,5 +1,6 @@
 const productRepo = require("../repositories/productRepository");
 const rankingService = require("./rankingService");
+const detectIntent = require("../utils/intentDetector");
 
 class SearchService {
   search(query) {
@@ -8,7 +9,7 @@ class SearchService {
     const normalizedQuery = query.toLowerCase();
     const products = productRepo.getAllProducts();
 
-    // 1️⃣ Recall phase: find matching products
+    // 1️⃣ Recall phase
     const matchedProducts = products.filter(product => {
       const titleMatch =
         product.title &&
@@ -25,8 +26,11 @@ class SearchService {
       return titleMatch || descriptionMatch || metadataMatch;
     });
 
-    // 2️⃣ Ranking phase: score & sort
-    return rankingService.rank(matchedProducts, query);
+    // 2️⃣ Detect intent
+    const intent = detectIntent(query);
+
+    // 3️⃣ Rank results
+    return rankingService.rank(matchedProducts, query, intent);
   }
 }
 
