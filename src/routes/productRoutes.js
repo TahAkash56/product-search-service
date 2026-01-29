@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const productRepo = require("../repositories/productRepository");
+const searchService = require("../services/searchService");
 
 router.post("/api/v1/product", (req, res) => {
   try {
@@ -12,6 +13,48 @@ router.post("/api/v1/product", (req, res) => {
   } catch (err) {
     res.status(500).json({
       message: "Failed to store product"
+    });
+  }
+});
+
+router.put("/api/v1/product/meta-data", (req, res) => {
+  try {
+    const { productId, Metadata } = req.body;
+
+    const updatedProduct = productRepo.updateMetadata(
+      Number(productId),
+      Metadata
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({
+        message: "Product not found"
+      });
+    }
+
+    res.json({
+      productId: updatedProduct.productId,
+      Metadata: updatedProduct.metadata
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Failed to update metadata"
+    });
+  }
+});
+
+router.get("/api/v1/search/product", (req, res) => {
+  try {
+    const { query } = req.query;
+
+    const results = searchService.search(query);
+
+    res.json({
+      data: results
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Search failed"
     });
   }
 });

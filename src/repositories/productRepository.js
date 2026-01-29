@@ -23,6 +23,21 @@ class ProductRepository {
   getAllProducts() {
     return Array.from(this.products.values());
   }
+
+  updateMetadata(productId, metadata) {
+    const product = this.products.get(productId);
+
+    if (!product) {
+        return null;
+    }
+
+    product.metadata = {
+        ...product.metadata,
+        ...metadata
+    };
+
+    return product;
+    }
 }
 
 module.exports = new ProductRepository();
