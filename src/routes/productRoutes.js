@@ -49,14 +49,23 @@ router.get("/api/v1/search/product", (req, res) => {
 
     const results = searchService.search(query);
 
-    res.json({
+    // ✅ SMALL GUARD ADDED HERE
+    if (!results || results.length === 0) {
+      return res.json({
+        data: [],
+        message: "No relevant products found"
+      });
+    }
+
+    return res.json({
       data: results
     });
   } catch (err) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Search failed"
     });
   }
 });
+
 
 module.exports = router;
